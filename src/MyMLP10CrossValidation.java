@@ -11,7 +11,7 @@ import weka.filters.supervised.attribute.AddClassification;
 
 public class MyMLP10CrossValidation {
 
-	double CrossValidationRun(Instances data, MultilayerPerceptron mlp, int seed, int folds){
+	Evaluation CrossValidationRun(Instances data, MultilayerPerceptron mlp, int seed, int folds){
 
 		Random rand = new Random(seed);
 		Instances randData = new Instances(data);
@@ -52,7 +52,7 @@ public class MyMLP10CrossValidation {
 					predictedData.add(pred.instance(j));
 			}
 
-			// output evaluation
+			/* output evaluation
 			System.out.println();
 			System.out.println("=== Setup ===");
 			System.out.println("Classifier: " + mlp.getClass().getName() + " " +
@@ -67,13 +67,14 @@ public class MyMLP10CrossValidation {
 			System.out.println("f-Measure = "+eval.fMeasure(1));
 			double gMean= Math.sqrt(eval.truePositiveRate(1)* eval.truePositiveRate(0));
 			System.out.println("g-Mean = "+ gMean);
-			return gMean; 
+			//*/
+			return eval; 
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return -1;
+		return null;
 
 	}
 }
