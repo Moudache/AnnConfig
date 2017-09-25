@@ -1,7 +1,9 @@
 import java.io.BufferedReader;
 
 import weka.core.Instances;
+import weka.classifiers.Evaluation;
 import weka.classifiers.functions.MultilayerPerceptron;
+
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -39,6 +41,7 @@ public class ANN {
 		int folds = 10;
 		double MaxGMean=0;
 		double gMean =0;
+		Evaluation best = null, eval;
 		String bestLayers="";
 		String layer="";
 		
@@ -46,22 +49,26 @@ public class ANN {
 		//1st Layer Variation
 		for (int l=1;l<MaxLayers; l++){
 			layer=Integer.toString(l);
-			System.out.println("Hidden layers config : "+layer);
+			//System.out.println("Hidden layers config : "+layer);
 			mlp.setHiddenLayers(layer);
-			gMean= validation.CrossValidationRun(data, mlp, seed, folds);
+			eval= validation.CrossValidationRun(data, mlp, seed, folds);
+			gMean= Math.sqrt(eval.truePositiveRate(1)* eval.truePositiveRate(0));
 			if(gMean>MaxGMean){
 				bestLayers= layer;
+				best = eval;
 				MaxGMean= gMean;
 			}
-			System.out.println("\n\n");
+			//System.out.println("\n\n");
 			//*2nd Layer Variation
 			for (int j=1;j<MaxLayers;j++){
 				layer=Integer.toString(l)+","+Integer.toString(j);
-				System.out.println("Hidden layers config : "+layer);
+				//System.out.println("Hidden layers config : "+layer);
 				mlp.setHiddenLayers(layer);
-				gMean= validation.CrossValidationRun(data, mlp, seed, folds);
+				eval= validation.CrossValidationRun(data, mlp, seed, folds);
+				gMean= Math.sqrt(eval.truePositiveRate(1)* eval.truePositiveRate(0));
 				if(gMean>MaxGMean){
 					bestLayers= layer;
+					best = eval;
 					MaxGMean= gMean;
 				}
 				//* 3rd Layer variation
@@ -69,9 +76,11 @@ public class ANN {
 					layer=Integer.toString(l)+","+Integer.toString(j)+","+Integer.toString(k);
 					System.out.println("Hidden layers config : "+layer);
 					mlp.setHiddenLayers(layer);
-					gMean= validation.CrossValidationRun(data, mlp, seed, folds);
+					eval= validation.CrossValidationRun(data, mlp, seed, folds);
+					gMean= Math.sqrt(eval.truePositiveRate(1)* eval.truePositiveRate(0));
 					if(gMean>MaxGMean){
 						bestLayers= layer;
+						best = eval;
 						MaxGMean= gMean;
 					}
 				}
@@ -79,7 +88,11 @@ public class ANN {
 			}
 			//*/
 		}
-		System.out.println("\nMax g-Mean = "+ MaxGMean);
+		
+		System.out.println("\nMax Fmeasure = "+best.fMeasure(1)+
+				 				"TPR ="+ best.truePositiveRate(1)+
+									"\n TNR ="+ best.truePositiveRate(0)+
+									"\n g-Mean = "+ MaxGMean);
 		System.out.println("Best hidden layers config is : "+bestLayers);
 	}
 	
