@@ -6,20 +6,21 @@ import weka.classifiers.functions.MultilayerPerceptron;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Random;
 
 
 public class ANNMax {
 	
 	private final static int MaxLayers=21;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		System.setProperty( "file.encoding", "UTF-8" );
 		Instances data=null;
 
 		// loads data and set class index
 		try {
 			BufferedReader reader = new BufferedReader( new
-					FileReader("E:\\Maitrise Uqtr\\Sujet de recherche\\DATA\\Ant 15\\"
+					FileReader("T:\\AnnConfig\\DATA\\Ant 15\\"
 							+ "Ant15.BugsBinaryDuplicatedNoQi.arff") );
 
 			data = new Instances(reader);
@@ -39,21 +40,22 @@ public class ANNMax {
 		mlp.setTrainingTime(500);
 
 		// other options
-		int seed  = 0; //Todo use seed
+		//int seed  = 0; Todo use seed
 		int folds = 10;
 		double MaxGMean=0, gMean =0;
-		Evaluation best = null, eval;
+		Evaluation best = null, eval= new Evaluation(data);
 		int bestLayer1 =0, bestLayer2=0;
 		String bestLayers="", layer="";
 		
-		MyMLP10CrossValidation validation = new MyMLP10CrossValidation();
+		//MyMLP10CrossValidation validation = new MyMLP10CrossValidation();
 		
 		//1st Layer Variation
 		for (int l=1;l<MaxLayers; l++){
 			layer=Integer.toString(l);
 			System.out.println("Hidden layers config : "+layer);
 			mlp.setHiddenLayers(layer);
-			eval= validation.CrossValidationRun(data, mlp, seed, folds);
+			eval.crossValidateModel(mlp, data, folds, new Random(1));
+			//eval= validation.CrossValidationRun(data, mlp, seed, folds);
 			gMean= Math.sqrt(eval.truePositiveRate(1)* eval.truePositiveRate(0));
 			if(gMean>MaxGMean){
 				bestLayer1 =l;
@@ -66,9 +68,10 @@ public class ANNMax {
 		//*2nd Layer Variation
 		for (int j=1;j<MaxLayers;j++){
 			layer=Integer.toString(bestLayer1)+","+Integer.toString(j);
-			System.out.println("Hidden layers config : "+layer);
+			//System.out.println("Hidden layers config : "+layer);
 			mlp.setHiddenLayers(layer);
-			eval= validation.CrossValidationRun(data, mlp, seed, folds);
+			eval.crossValidateModel(mlp, data, folds, new Random(1));
+			//eval= validation.CrossValidationRun(data, mlp, seed, folds);
 			gMean= Math.sqrt(eval.truePositiveRate(1)* eval.truePositiveRate(0));
 			if(gMean>MaxGMean){
 				bestLayer2=j;
@@ -83,9 +86,10 @@ public class ANNMax {
 		for (int k=1;k<MaxLayers;k++){
 			layer=Integer.toString(bestLayer1)+","+Integer.toString(bestLayer2)+
 					","+Integer.toString(k);
-			System.out.println("Hidden layers config : "+layer);
+			//System.out.println("Hidden layers config : "+layer);
 			mlp.setHiddenLayers(layer);
-			eval= validation.CrossValidationRun(data, mlp, seed, folds);
+			eval.crossValidateModel(mlp, data, folds, new Random(1));
+			//eval= validation.CrossValidationRun(data, mlp, seed, folds);
 			gMean= Math.sqrt(eval.truePositiveRate(1)* eval.truePositiveRate(0));
 			if(gMean>MaxGMean){
 				bestLayers= layer;
