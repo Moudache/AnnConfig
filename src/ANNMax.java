@@ -83,20 +83,23 @@ public class ANNMax {
 		//*/
 		
 		//* 3rd Layer variation
-		for (int k=1;k<MaxLayers;k++){
-			layer=Integer.toString(bestLayer1)+","+Integer.toString(bestLayer2)+
-					","+Integer.toString(k);
-			//System.out.println("Hidden layers config : "+layer);
-			mlp.setHiddenLayers(layer);
-			eval.crossValidateModel(mlp, data, folds, new Random(1));
-			//eval= validation.CrossValidationRun(data, mlp, seed, folds);
-			gMean= Math.sqrt(eval.truePositiveRate(1)* eval.truePositiveRate(0));
-			if(gMean>MaxGMean){
-				bestLayers= layer;
-				best = eval;
-				MaxGMean= gMean;
+		if (bestLayer2>0){
+			for (int k=1;k<MaxLayers;k++){
+				layer=Integer.toString(bestLayer1)+","+Integer.toString(bestLayer2)+
+						","+Integer.toString(k);
+				//System.out.println("Hidden layers config : "+layer);
+				mlp.setHiddenLayers(layer);
+				eval.crossValidateModel(mlp, data, folds, new Random(1));
+				//eval= validation.CrossValidationRun(data, mlp, seed, folds);
+				gMean= Math.sqrt(eval.truePositiveRate(1)* eval.truePositiveRate(0));
+				if(gMean>MaxGMean){
+					bestLayers= layer;
+					best = eval;
+					MaxGMean= gMean;
+				}
 			}
 		}
+			
 		//*/
 		
 		System.out.println("\nMax Fmeasure = "+best.fMeasure(1)+
