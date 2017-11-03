@@ -20,8 +20,8 @@ public class ANNMax {
 		// loads data and set class index
 		try {
 			BufferedReader reader = new BufferedReader( new
-					FileReader("T:\\AnnConfig\\DATA\\Ant 15\\"
-							+ "Ant15.BugsBinaryDuplicatedNoQi.arff") );
+					FileReader("X:\\AnnConfig\\DATA\\Ant 17\\"
+							+ "Ant17BugsBinary.csv.arff") );
 
 			data = new Instances(reader);
 			reader.close();
@@ -42,7 +42,7 @@ public class ANNMax {
 		// other options
 		//int seed  = 0; Todo use seed
 		int folds = 10;
-		double MaxGMean=0, gMean =0;
+		double MaxGMean=-1, gMean =0;
 		Evaluation best = null, eval= new Evaluation(data);
 		int bestLayer1 =0, bestLayer2=0;
 		String bestLayers="", layer="";
@@ -68,7 +68,7 @@ public class ANNMax {
 		//*2nd Layer Variation
 		for (int j=1;j<MaxLayers;j++){
 			layer=Integer.toString(bestLayer1)+","+Integer.toString(j);
-			//System.out.println("Hidden layers config : "+layer);
+			System.out.println("Hidden layers config : "+layer);
 			mlp.setHiddenLayers(layer);
 			eval.crossValidateModel(mlp, data, folds, new Random(1));
 			//eval= validation.CrossValidationRun(data, mlp, seed, folds);
@@ -103,7 +103,7 @@ public class ANNMax {
 		//*/
 		
 		System.out.println("\nMax Fmeasure = "+best.fMeasure(1)+
-				 				"TPR ="+ best.truePositiveRate(1)+
+				 				"\nTPR ="+ best.truePositiveRate(1)+
 									"\n TNR ="+ best.truePositiveRate(0)+
 									"\n g-Mean = "+ MaxGMean);
 		System.out.println("Best hidden layers config is : "+bestLayers);
