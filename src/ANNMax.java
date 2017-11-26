@@ -20,8 +20,8 @@ public class ANNMax {
 		// loads data and set class index
 		try {
 			BufferedReader reader = new BufferedReader( new
-					FileReader("X:\\AnnConfig\\DATA\\Ant 17\\"
-							+ "Ant17BugsBinary.csv.arff") );
+					FileReader("X:\\AnnConfig\\DATA\\Ant 16\\Binary"
+							+ "\\Balanced\\Ant16BugsBinaryBalancedLocCbo.arff") );
 
 			data = new Instances(reader);
 			reader.close();
