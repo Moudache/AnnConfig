@@ -177,10 +177,10 @@ public class ANNMax {
 			
 		//*/
 		
-		System.out.println(roundAvoid(best.weightedTruePositiveRate(), bestLayer2)+
-				 		"\t"+ roundAvoid(best.truePositiveRate(1), bestLayer2)+
-							"\t"+ roundAvoid(best.truePositiveRate(0), bestLayer2)+
-								"\t"+ roundAvoid(MaxGMean, bestLayer2));
+		System.out.println(roundAvoid(best.weightedTruePositiveRate(), places)+
+				 		"\t"+ roundAvoid(best.truePositiveRate(1), places)+
+							"\t"+ roundAvoid(best.truePositiveRate(0), places)+
+								"\t"+ roundAvoid(MaxGMean, places));
 		System.out.println("Best hidden layers config is : "+bestLayers);
 	}
 	
