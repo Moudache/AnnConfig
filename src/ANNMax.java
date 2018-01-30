@@ -1,17 +1,26 @@
 import java.io.BufferedReader;
-
-import weka.core.Instances;
-import weka.classifiers.Evaluation;
-import weka.classifiers.functions.MultilayerPerceptron;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Random;
 
+import weka.classifiers.Evaluation;
+import weka.classifiers.functions.Logistic;
+import weka.classifiers.functions.MultilayerPerceptron;
+import weka.classifiers.functions.SMO;
+import weka.classifiers.trees.J48;
+import weka.classifiers.trees.RandomForest;
+import weka.core.Instances;
+
 
 public class ANNMax {
 	
-	private final static int MaxLayers=21;
+	
+	private final static int MaxLayers=21, folds = 10, places =3;
+	
+	private static double roundAvoid(double value, int places) {
+	    double scale = Math.pow(10, places);
+	    return Math.round(value * scale) / scale;
+	}
 	
 	public static void main(String[] args) throws Exception {
 		System.setProperty( "file.encoding", "UTF-8" );
@@ -20,20 +29,86 @@ public class ANNMax {
 		// loads data and set class index
 		try {
 			BufferedReader reader = new BufferedReader( new
-					FileReader("X:\\AnnConfig\\DATA\\Ant 16\\Binary"
-							+ "\\Balanced\\Ant16BugsBinaryBalancedLocCbo.arff") );
+					//FileReader("E:\\Maitrise Uqtr\\Sujet de recherche\\AnnConfig\\DATA\\Ant 17\\Binary"
+					FileReader("E:\\Maitrise Uqtr\\Sujet de recherche\\AnnConfig\\DATA\\Ant 17\\Binary\\Duplicated"
+					//FileReader("E:\\Maitrise Uqtr\\Sujet de recherche\\AnnConfig\\DATA\\Ant 15\\Binary\\Balanced"
+							+ "\\Ant17BinaryDuplicatedD(d(LOC,Ce),d(RFC, Ca)).arff") );
 
 			data = new Instances(reader);
 			reader.close();
 			data.setClassIndex(data.numAttributes() - 1);
+			System.out.println(data.classAttribute());
 		}
 
 		catch ( IOException e ){
 			e.printStackTrace();
 		}
+		
+		double gMean;
 
-		//*
+		//*Naive Bayes
+		weka.classifiers.bayes.NaiveBayes nv = new weka.classifiers.bayes.NaiveBayes();
+		Evaluation nvEval =new Evaluation(data);
+		nvEval.crossValidateModel(nv, data, folds, new Random(1));
+		gMean= Math.sqrt(nvEval.truePositiveRate(1)* nvEval.truePositiveRate(0));
+		System.out.println(roundAvoid(nvEval.weightedTruePositiveRate(), places)+
+ 				"\t"+ roundAvoid(nvEval.truePositiveRate(1), places)+
+					"\t"+ roundAvoid(nvEval.truePositiveRate(0), places)+
+						"\t"+ roundAvoid(gMean, places));
+		//*/
+		
+		//*J48
+		J48 j48= new J48();
+		Evaluation jEval =new Evaluation(data);
+		jEval.crossValidateModel(j48, data, folds, new Random(1));
+		gMean= Math.sqrt(jEval.truePositiveRate(1)* jEval.truePositiveRate(0));
+		
+		System.out.println(roundAvoid(jEval.fMeasure(1), places)+
+ 				"\t"+ roundAvoid(jEval.truePositiveRate(1), places)+
+					"\t"+ roundAvoid(jEval.truePositiveRate(0), places)+
+						"\t"+ roundAvoid(gMean, places));
+		//*/
+		
+		//*Random Forest
+		RandomForest rf= new RandomForest();
+		Evaluation rfEval =new Evaluation(data);
+		rfEval.crossValidateModel(rf, data, folds, new Random(1));
+		gMean= Math.sqrt(rfEval.truePositiveRate(1)* rfEval.truePositiveRate(0));
+		
+		System.out.println(roundAvoid(rfEval.weightedTruePositiveRate(), places)+
+ 				"\t"+ roundAvoid(rfEval.truePositiveRate(1), places)+
+					"\t"+ roundAvoid(rfEval.truePositiveRate(0), places)+
+						"\t"+ roundAvoid(gMean, places));
+		//*/
+		
+		//*RLog
+		Logistic rLog= new Logistic();
+		Evaluation rLogEval =new Evaluation(data);
+		rLogEval.crossValidateModel(rLog, data, folds, new Random(1));
+		gMean= Math.sqrt(rLogEval.truePositiveRate(1)* rLogEval.truePositiveRate(0));
+		
+		System.out.println(roundAvoid(rLogEval.weightedTruePositiveRate(), places)+
+ 				"\t"+ roundAvoid(rLogEval.truePositiveRate(1), places)+
+					"\t"+ roundAvoid(rLogEval.truePositiveRate(0), places)+
+						"\t"+ roundAvoid(gMean, places));
+		//*/
+		
+		//*SVM
+		SMO svm= new SMO();
+		Evaluation svmEval =new Evaluation(data);
+		svmEval.crossValidateModel(svm, data, folds, new Random(1));
+		gMean= Math.sqrt(svmEval.truePositiveRate(1)* svmEval.truePositiveRate(0));
+		
+		System.out.println(roundAvoid(svmEval.weightedTruePositiveRate(), places)+
+ 				"\t"+ roundAvoid(svmEval.truePositiveRate(1), places)+
+					"\t"+ roundAvoid(svmEval.truePositiveRate(0), places)+
+					"\t"+ roundAvoid(gMean, places));
+		//*/
+		
+		//* MLP
 		MultilayerPerceptron mlp= new MultilayerPerceptron();
+		
+		
 		// Set Options
 		mlp.setLearningRate(0.1);
 		mlp.setMomentum(0.2);
@@ -41,8 +116,8 @@ public class ANNMax {
 
 		// other options
 		//int seed  = 0; Todo use seed
-		int folds = 10;
-		double MaxGMean=-1, gMean =0;
+		double MaxGMean=-1; 
+		gMean =0;
 		Evaluation best = null, eval= new Evaluation(data);
 		int bestLayer1 =0, bestLayer2=0;
 		String bestLayers="", layer="";
@@ -52,7 +127,7 @@ public class ANNMax {
 		//1st Layer Variation
 		for (int l=1;l<MaxLayers; l++){
 			layer=Integer.toString(l);
-			System.out.println("Hidden layers config : "+layer);
+			//System.out.println("Hidden layers config : "+layer);
 			mlp.setHiddenLayers(layer);
 			eval.crossValidateModel(mlp, data, folds, new Random(1));
 			//eval= validation.CrossValidationRun(data, mlp, seed, folds);
@@ -68,7 +143,7 @@ public class ANNMax {
 		//*2nd Layer Variation
 		for (int j=1;j<MaxLayers;j++){
 			layer=Integer.toString(bestLayer1)+","+Integer.toString(j);
-			System.out.println("Hidden layers config : "+layer);
+			//System.out.println("Hidden layers config : "+layer);
 			mlp.setHiddenLayers(layer);
 			eval.crossValidateModel(mlp, data, folds, new Random(1));
 			//eval= validation.CrossValidationRun(data, mlp, seed, folds);
@@ -102,10 +177,10 @@ public class ANNMax {
 			
 		//*/
 		
-		System.out.println("\nMax Fmeasure = "+best.fMeasure(1)+
-				 				"\nTPR ="+ best.truePositiveRate(1)+
-									"\n TNR ="+ best.truePositiveRate(0)+
-									"\n g-Mean = "+ MaxGMean);
+		System.out.println(roundAvoid(best.weightedTruePositiveRate(), bestLayer2)+
+				 		"\t"+ roundAvoid(best.truePositiveRate(1), bestLayer2)+
+							"\t"+ roundAvoid(best.truePositiveRate(0), bestLayer2)+
+								"\t"+ roundAvoid(MaxGMean, bestLayer2));
 		System.out.println("Best hidden layers config is : "+bestLayers);
 	}
 	
