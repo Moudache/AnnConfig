@@ -29,14 +29,14 @@ public class ANNMax {
 		// loads data and set class index
 		try {
 			BufferedReader reader = new BufferedReader( new
-					//* 
-					 FileReader("E:\\Maitrise Uqtr\\Sujet de recherche\\AnnConfig\\DATA\\Ant 15\\Severity"
-					 		+ "\\Ant15SeverityD(Loc,Ca).arff") );
+					/* 
+					 FileReader("C:\\Users\\boussad\\Documents\\GitHub\\AnnConfig\\DATA\\Ant 15\\Normal\\Binary"
+					 		+ "\\Ant15NormalBugsD(Loc, Ce).arff") );
 					//*/
 					
-					/*
-					FileReader("E:\\Maitrise Uqtr\\Sujet de recherche\\AnnConfig\\DATA\\Ant 15\\Normal\\Duplicated"
-							+ "\\Ant15NBugsDuplicated.D(LOC,fanin).arff") );
+					//*
+					FileReader("C:\\Users\\boussad\\Documents\\GitHub\\AnnConfig\\DATA\\Ant 15\\Severity\\Duplicated"
+							+ "\\Ant15.SeverityDuplicatedD(Loc, Rfc).arff") );
 					//*/
 			
 					/*
@@ -61,10 +61,13 @@ public class ANNMax {
 		Evaluation nvEval =new Evaluation(data);
 		nvEval.crossValidateModel(nv, data, folds, new Random(1));
 		gMean= Math.sqrt(nvEval.truePositiveRate(1)* nvEval.truePositiveRate(0));
+
 		System.out.println(roundAvoid(nvEval.weightedTruePositiveRate(), places)+
- 				"\t"+ roundAvoid(nvEval.truePositiveRate(1), places)+
-					"\t"+ roundAvoid(nvEval.truePositiveRate(0), places)+
-						"\t"+ roundAvoid(gMean, places));
+ 				"\t"+ roundAvoid(nvEval.weightedTrueNegativeRate(), places)+
+						"\t"+ roundAvoid(gMean, places)+
+							"\t"+ roundAvoid(nvEval.weightedFMeasure(), places)+
+								"\t"+ roundAvoid(nvEval.weightedAreaUnderROC(), places));
+		
 		//*/
 		
 		//*J48
@@ -74,9 +77,10 @@ public class ANNMax {
 		gMean= Math.sqrt(jEval.truePositiveRate(1)* jEval.truePositiveRate(0));
 		
 		System.out.println(roundAvoid(jEval.weightedTruePositiveRate(), places)+
- 				"\t"+ roundAvoid(jEval.truePositiveRate(1), places)+
-					"\t"+ roundAvoid(jEval.truePositiveRate(0), places)+
-						"\t"+ roundAvoid(gMean, places));
+ 				"\t"+ roundAvoid(jEval.weightedTrueNegativeRate(), places)+
+						"\t"+ roundAvoid(gMean, places)+
+							"\t"+ roundAvoid(jEval.weightedFMeasure(), places)+
+								"\t"+ roundAvoid(jEval.weightedAreaUnderROC(), places));
 		//*/
 		
 		//*Random Forest
@@ -86,9 +90,10 @@ public class ANNMax {
 		gMean= Math.sqrt(rfEval.truePositiveRate(1)* rfEval.truePositiveRate(0));
 		
 		System.out.println(roundAvoid(rfEval.weightedTruePositiveRate(), places)+
- 				"\t"+ roundAvoid(rfEval.truePositiveRate(1), places)+
-					"\t"+ roundAvoid(rfEval.truePositiveRate(0), places)+
-						"\t"+ roundAvoid(gMean, places));
+ 				"\t"+ roundAvoid(rfEval.weightedTrueNegativeRate(), places)+
+						"\t"+ roundAvoid(gMean, places)+
+							"\t"+ roundAvoid(rfEval.weightedFMeasure(), places)+
+								"\t"+ roundAvoid(rfEval.weightedAreaUnderROC(), places));
 		//*/
 		
 		//*RLog
@@ -98,9 +103,10 @@ public class ANNMax {
 		gMean= Math.sqrt(rLogEval.truePositiveRate(1)* rLogEval.truePositiveRate(0));
 		
 		System.out.println(roundAvoid(rLogEval.weightedTruePositiveRate(), places)+
- 				"\t"+ roundAvoid(rLogEval.truePositiveRate(1), places)+
-					"\t"+ roundAvoid(rLogEval.truePositiveRate(0), places)+
-						"\t"+ roundAvoid(gMean, places));
+ 				"\t"+ roundAvoid(rLogEval.weightedTrueNegativeRate(), places)+
+						"\t"+ roundAvoid(gMean, places)+
+							"\t"+ roundAvoid(rLogEval.weightedFMeasure(), places)+
+								"\t"+ roundAvoid(rLogEval.weightedAreaUnderROC(), places));	
 		//*/
 		
 		//*SVM
@@ -110,9 +116,10 @@ public class ANNMax {
 		gMean= Math.sqrt(svmEval.truePositiveRate(1)* svmEval.truePositiveRate(0));
 		
 		System.out.println(roundAvoid(svmEval.weightedTruePositiveRate(), places)+
- 				"\t"+ roundAvoid(svmEval.truePositiveRate(1), places)+
-					"\t"+ roundAvoid(svmEval.truePositiveRate(0), places)+
-					"\t"+ roundAvoid(gMean, places));
+ 				"\t"+ roundAvoid(svmEval.weightedTrueNegativeRate(), places)+
+					"\t"+ roundAvoid(gMean, places)+
+						"\t"+ roundAvoid(svmEval.weightedFMeasure(), places)+
+							"\t"+ roundAvoid(svmEval.weightedAreaUnderROC(), places));
 		//*/
 		
 		//* MLP
@@ -188,9 +195,10 @@ public class ANNMax {
 		//*/
 		
 		System.out.println(roundAvoid(best.weightedTruePositiveRate(), places)+
-				 		"\t"+ roundAvoid(best.truePositiveRate(1), places)+
-							"\t"+ roundAvoid(best.truePositiveRate(0), places)+
-								"\t"+ roundAvoid(MaxGMean, places));
+		 		"\t"+ roundAvoid(best.weightedTrueNegativeRate(), places)+
+					"\t"+ roundAvoid(MaxGMean, places)+
+						"\t"+ roundAvoid(best.weightedFMeasure(), places)+
+							"\t"+ roundAvoid(best.weightedAreaUnderROC(), places));
 		System.out.println("Best hidden layers config is : "+bestLayers);
 	}
 	
